@@ -6,7 +6,9 @@ A simple Python client to interact with 3DSNP v2.0 API by requests package.
 
 For `data/snps_information.csv`, you can retrieve 3D gene and 3D snps information with this list.
 
-`python run.py`
+```bash
+python run.py
+```
 
 ## License
 
