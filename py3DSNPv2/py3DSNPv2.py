@@ -1,3 +1,4 @@
+import pandas
 from typing import Optional, List, Any
 import requests
 
@@ -26,7 +27,7 @@ class Client:
         return job
 
 
-def process_3dgenes(job: Job) -> Optional[List[Any]]:
+def process_3dgenes(job: Job) -> Optional[pandas.DataFrame]:
     if type(job.output) is list:
         results = []
         for i in range(len(job.output[0]["data_loop_gene"])):
@@ -37,19 +38,22 @@ def process_3dgenes(job: Job) -> Optional[List[Any]]:
                     for key in ["gene", "start", "end", "distance", "cell", "type_loop"]
                 ]
             )
-        return results
+        return pandas.DataFrame(
+            results,
+            columns=["rs", "gene", "start", "end", "distance", "cell", "type_loop"],
+        )
     else:
         return None
 
 
-def process_3dsnps(job: Job) -> Optional[List[Any]]:
+def process_3dsnps(job: Job) -> Optional[pandas.DataFrame]:
     if type(job.output) is list:
         results = []
         for i in range(len(job.output[0]["data_loop_snp"])):
             results.append(
                 [job.rs]
                 + [
-                    job.output[0]["data_loop_gene"][i][key]
+                    job.output[0]["data_loop_snp"][i][key]
                     for key in [
                         "SNP_B",
                         "r2",
@@ -63,6 +67,20 @@ def process_3dsnps(job: Job) -> Optional[List[Any]]:
                     ]
                 ]
             )
-        return results
+        return pandas.DataFrame(
+            results,
+            columns=[
+                "rs",
+                "SNP_B",
+                "r2",
+                "dp",
+                "start",
+                "end",
+                "distance",
+                "cell",
+                "type_loop",
+                "type",
+            ],
+        )
     else:
         return None

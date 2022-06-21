@@ -10,26 +10,25 @@ def run(snps: List[str], type: str, filename: Union[str, pathlib.Path]) -> None:
     client = Client()
 
     # Iteratively create jobs for each SNP
+    results = pandas.DataFrame()
     for snp in snps:
         # Create job
         job = Job(snp, type=type, format="json")
 
-        results = []
         # Run job with 3DSNP v2.0 api
         job = client.run(job)
 
         # Process job depending on type of data
         if type == "3dgene":
             tmp = process_3dgenes(job)
-        elif type == "3dsnps":
+        elif type == "3dsnp":
             tmp = process_3dsnps(job)
 
         # Append non-None data to results
         if tmp is not None:
-            results.append(tmp)
+            results = pandas.concat([results, tmp])
 
     # List to pandas.DataFrame
-    results = pandas.DataFrame(results)
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     results.to_csv(filename)
 
